@@ -45,9 +45,9 @@ function App() {
   const userLogin = async () => {
     try {
       const res = await axios.post(`${baseUrl}/v2/admin/signin`, account);
-      getProducts();
       setIsAuth(true);
       const { token, expired } = res.data;
+      getProducts(token);
       document.cookie = `eeToken=${token}; expires=${new Date(expired)}`;
     } catch (error) {
       alert('登入失敗');
@@ -62,9 +62,13 @@ function App() {
   axios.defaults.headers.common['Authorization'] = authToken;
 
   // 取得資料API
-  const getProducts = async () => {
+  const getProducts = async (token) => {
     try {
-      const res = await axios.get(`${baseUrl}/v2/api/${apiPath}/admin/products`);
+      const res = await axios.get(`${baseUrl}/v2/api/${apiPath}/admin/products`,{
+        headers:{
+          authorization: token
+        }
+      });
       setProducts(res.data.products);
     } catch (error) {
       console.log('取得資料失敗');
